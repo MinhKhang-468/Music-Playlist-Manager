@@ -1,22 +1,33 @@
+# ==============================================================================
+# FILE: core_struct.py
+# ==============================================================================
 
-# Xây dựng Lớp node và Lớp Playlist manager. Khởi tạo các con trỏ head, tail, current, size. Viết hàm add_song() và is_empty()
-
-#Khởi tạo class và con trỏ 
 class Node:
-    def __init__(self, ten_bai):
-        self.ten = ten_bai
+    def __init__(self, title: str, artist: str):
+
+        if title == "" or artist == "":
+            raise ValueError("Ten bai hat va ca si khong duoc de trong!")
+
+        self.title = title
+        self.artist = artist
         self.next = None
         self.prev = None
 
-class Playlist:
+
+class PlaylistManager:
     def __init__(self):
         self.head = None
         self.tail = None
         self.current = None
+        self.size = 0
 
-    def them_bai(self, ten_bai):
-        new_node = Node(ten_bai)
-        if self.head is None:
+    def is_empty(self):
+        return self.head is None
+
+    def add_song(self, title: str, artist: str):
+        new_node = Node(title, artist)
+
+        if self.is_empty():
             self.head = new_node
             self.tail = new_node
             self.current = new_node
@@ -24,103 +35,69 @@ class Playlist:
             self.tail.next = new_node
             new_node.prev = self.tail
             self.tail = new_node
-        print("-> Da them bai hat thanh cong!")
 
-    def next_bai(self):
-        if self.current is None:
-            print("-> Danh sach dang rong!")
-            return
-        if self.current.next is not None:
+        self.size += 1
+
+    def next_song(self):
+        if self.current and self.current.next:
             self.current = self.current.next
-            print("-> Dang phat:", self.current.ten)
-        else:
-            print("-> Da den bai cuoi cung roi!")
+            return True
+        return False
 
-    def prev_bai(self):
-        if self.current is None:
-            print("-> Danh sach dang rong!")
-            return
-        if self.current.prev is not None:
+    def prev_song(self):
+        if self.current and self.current.prev:
             self.current = self.current.prev
-            print("-> Dang phat:", self.current.ten)
-        else:
-            print("-> Dang o bai dau tien roi!")
+            return True
+        return False
 
-    def xoa_bai(self, ten_bai):
-        p = self.head
-        while p is not None:
-            # (Phải gõ chính xác hoa/thường thì mới xóa được)
-            if p.ten == ten_bai: 
-                if p == self.head and p == self.tail: # Có đúng 1 bài
+    def delete_song_by_title(self, title: str):
+        if self.is_empty():
+            return False
+
+        curr = self.head
+        while curr:
+
+            if curr.title.lower() == title:
+ 
+                if self.size == 1:
                     self.head = None
                     self.tail = None
-                    self.current = None
-                elif p == self.head:
-                    self.head = p.next
+
+                elif curr == self.head:
+                    self.head = curr.next
                     self.head.prev = None
-                elif p == self.tail:
-                    self.tail = p.prev
+                    if self.current == curr:
+                        self.current = self.head
+                elif curr == self.tail:
+                    self.tail = curr.prev
                     self.tail.next = None
+                    if self.current == curr:
+                        self.current = self.tail
                 else:
-                    p.prev.next = p.next
-                    p.next.prev = p.prev
-                # (Nếu xóa bài đang phát, con trỏ current vẫn chỉ vào bài đã xóa)
+                    curr.prev.next = curr.next
+                    curr.next.prev = curr.prev
+                    if self.current == curr:
+                        self.current = curr.next
 
-                print("-> Da xoa bai hat:", ten_bai)
-                return
-            p = p.next
-        print("-> Khong tim thay bai hat nay trong danh sach!")
+                self.size -= 1
+                return True
+            curr = curr.next
 
-    def in_danh_sach(self):
-        if self.head is None:
-            print("-> Danh sach rong!")
-            return
-        p = self.head
-        i = 1
-        print("\n--- DANH SACH PHAT NHAC ---")
-        while p is not None:
-            if p == self.current:
-                print(f"{i}. {p.ten}  <== [DANG PHAT]")
-            else:
-                print(f"{i}. {p.ten}")
-            p = p.next
-            i += 1
+        return False
 
-# --- CHƯƠNG TRÌNH CHÍNH (MENU) ---
-def main():
-    my_music = Playlist()
-    my_music.them_bai("bai hat 1")
-    my_music.them_bai("bai hat 2")
-    my_music.them_bai("bai hat 3")
+    def validate_links(self):
+        if self.is_empty():
+            return self.head is None and self.tail is None
 
-    while True:
-        print("\n=== QUAN LY PLAYLIST ===")
-        print("1. Xem danh sach bai hat")
-        print("2. Them bai hat mới")
-        print("3. Next (Bai tiep)")
-        print("4. Prev (Bai truoc)")
-        print("5. Xoa bai hat")
-        print("0. Thoat")
-        
-        chon = int(input("Chon chuc nang (0-5): "))
+        # Kiểm tra con trỏ đầu và cuối
+        if self.head.prev is not None or self.tail.next is not None:
+            return False
 
-        if chon == 1:
-            my_music.in_danh_sach()
-        elif chon == 2:
-            ten = input("Nhap ten bai hat: ")
-            my_music.them_bai(ten)
-        elif chon == 3:
-            my_music.next_bai()
-        elif chon == 4:
-            my_music.prev_bai()
-        elif chon == 5:
-            ten = input("Nhap ten bai hat can xoa: ")
-            my_music.xoa_bai(ten)
-        elif chon == 0:
-            print("Tam biet!")
-            break
-        else:
-            print("Loi yeu cau nhap lai! ")
+        # Đếm thực tế số Node
+        count = 0
+        curr = self.head
+        while curr:
+            count += 1
+            curr = curr.next
 
-if __name__ == "__main__":
-    main()
+        return count == self.size
