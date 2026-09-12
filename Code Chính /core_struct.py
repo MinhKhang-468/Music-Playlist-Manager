@@ -1,6 +1,7 @@
 # ==============================================================================
 # FILE: core_struct.py
 # ==============================================================================
+import random
 
 class Node:
     def __init__(self, title: str, artist: str):
@@ -57,11 +58,13 @@ class PlaylistManager:
         curr = self.head
         while curr:
 
-            if curr.title.lower() == title:
+            if curr.title.lower() == title.lower():
  
                 if self.size == 1:
                     self.head = None
                     self.tail = None
+                    if self.current == curr:
+                        self.current = None
 
                 elif curr == self.head:
                     self.head = curr.next
@@ -101,3 +104,36 @@ class PlaylistManager:
             curr = curr.next
 
         return count == self.size
+
+    def search_song(self, title: str):
+        if self.is_empty():
+            return None
+            
+        curr = self.head
+        index = 0
+        while curr:
+            if curr.title.lower() == title.lower():
+                return curr, index
+            curr = curr.next
+            index += 1
+            
+        return None
+
+    def shuffle_playlist(self):
+        if self.size < 2:
+            return
+            
+        nodes = []
+        curr = self.head
+        while curr:
+            nodes.append(curr)
+            curr = curr.next
+            
+        random.shuffle(nodes)
+        
+        self.head = nodes[0]
+        self.tail = nodes[-1]
+        
+        for i in range(len(nodes)):
+            nodes[i].prev = nodes[i - 1] if i > 0 else None
+            nodes[i].next = nodes[i + 1] if i < len(nodes) - 1 else None
