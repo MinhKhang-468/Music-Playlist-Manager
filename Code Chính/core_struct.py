@@ -137,3 +137,88 @@ class PlaylistManager:
         for i in range(len(nodes)):
             nodes[i].prev = nodes[i - 1] if i > 0 else None
             nodes[i].next = nodes[i + 1] if i < len(nodes) - 1 else None
+
+    def print_playlist(self):
+        if self.is_empty():
+            print("-> Danh sach rong!")
+            return
+        curr = self.head
+        i = 1
+        print("\n--- DANH SACH PHAT NHAC ---")
+        while curr:
+            if curr == self.current:
+                print(f"{i}. {curr.title} - {curr.artist}  <== [DANG PHAT]")
+            else:
+                print(f"{i}. {curr.title} - {curr.artist}")
+            curr = curr.next
+            i += 1
+
+# --- CHƯƠNG TRÌNH CHÍNH (MENU) ---
+def main():
+    my_music = PlaylistManager()
+    my_music.add_song("Bai hat 1", "Ca si A")
+    my_music.add_song("Bai hat 2", "Ca si B")
+    my_music.add_song("Bai hat 3", "Ca si C")
+
+    while True:
+        print("\n=== QUAN LY PLAYLIST ===")
+        print("1. Xem danh sach bai hat")
+        print("2. Them bai hat moi")
+        print("3. Next (Bai tiep)")
+        print("4. Prev (Bai truoc)")
+        print("5. Xoa bai hat")
+        print("6. Tim kiem bai hat")
+        print("7. Xao tron danh sach")
+        print("0. Thoat")
+        
+        try:
+            chon = int(input("Chon chuc nang (0-7): "))
+        except ValueError:
+            print("Vui long nhap so!")
+            continue
+
+        if chon == 1:
+            my_music.print_playlist()
+        elif chon == 2:
+            title = input("Nhap ten bai hat: ")
+            artist = input("Nhap ten ca si: ")
+            try:
+                my_music.add_song(title, artist)
+                print("-> Da them bai hat thanh cong!")
+            except ValueError as e:
+                print("-> Loi:", e)
+        elif chon == 3:
+            if my_music.next_song():
+                print("-> Dang phat:", my_music.current.title)
+            else:
+                print("-> Da den bai cuoi cung (hoac danh sach rong)!")
+        elif chon == 4:
+            if my_music.prev_song():
+                print("-> Dang phat:", my_music.current.title)
+            else:
+                print("-> Dang o bai dau tien (hoac danh sach rong)!")
+        elif chon == 5:
+            title = input("Nhap ten bai hat can xoa: ")
+            if my_music.delete_song_by_title(title):
+                print(f"-> Da xoa bai hat '{title}'!")
+            else:
+                print("-> Khong tim thay bai hat nay trong danh sach!")
+        elif chon == 6:
+            title = input("Nhap ten bai hat can tim: ")
+            result = my_music.search_song(title)
+            if result:
+                node, idx = result
+                print(f"-> Tim thay '{node.title} - {node.artist}' tai vi tri so {idx + 1}.")
+            else:
+                print(f"-> Khong tim thay '{title}' trong danh sach.")
+        elif chon == 7:
+            my_music.shuffle_playlist()
+            print("-> Da xao tron danh sach phat thanh cong!")
+        elif chon == 0:
+            print("Tam biet!")
+            break
+        else:
+            print("Loi, yeu cau nhap lai!")
+
+if __name__ == "__main__":
+    main()
