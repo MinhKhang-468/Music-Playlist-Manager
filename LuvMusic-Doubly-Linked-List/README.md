@@ -82,12 +82,5 @@ Ví dụ, khi nhấn **Bài tiếp theo**, JavaScript gửi `POST /api/next`. Fl
 
 ```bash
 python -m unittest test_core.py test_api.py -v
-```
-
-Code gốc có hai phiên bản không đồng nhất. Bản web dùng quy tắc mới trong `Giao diện.py`: xóa theo đúng **title + artist**, tìm theo cả tên bài hát và ca sĩ. Các lớp và cơ chế Doubly Linked List ban đầu vẫn được giữ nguyên.
-
-## 7. Đưa dự án lên GitHub
-
-Tải toàn bộ **nội dung bên trong thư mục** `LuvMusic-Doubly-Linked-List` lên repository. Không tải thư mục `__pycache__` hoặc file `.pyc`. Sau khi tải dự án về, người chấm chỉ cần giải nén và nhấp đúp `run.bat` trên Windows.
-
-Ứng dụng phát video bằng YouTube IFrame Player. Một số video có thể không phát trong trang web nếu chủ sở hữu video đã tắt tính năng nhúng; khi đó hãy thử một liên kết YouTube khác cho phép nhúng.
+...
+Bản web dùng quy tắc mới trong `Giao diện.py`: xóa theo đúng **title + artist**, tìm theo cả tên bài hát và ca sĩ. Các lớp và cơ chế Doubly Linked List ban đầu vẫn được giữ nguyên.
